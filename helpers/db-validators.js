@@ -33,5 +33,6 @@ const propertyByIdExists = async( id = '' ) => {
 
 module.exports = {
     emailExists,
-    userByIdExists
+    userByIdExists,
+    propertyByIdExists
 }

@@ -126,10 +126,23 @@ const updateProperty = async( req = request, res = response ) => {
 
 }
 
+const deleteProperty = async( req = request, res = response ) => {
+
+    const { id } = req.params;
+
+    const property = await Property.findByIdAndUpdate( id, { state: false });
+
+    res.json({
+        property
+    })
+
+}
+
 
 
 module.exports = {
     getProperties,
     createProperty,
-    updateProperty
+    updateProperty,
+    deleteProperty
 }

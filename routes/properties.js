@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getProperties, createProperty, updateProperty } = require('../controllers/properties');
+const { getProperties, createProperty, updateProperty, deleteProperty } = require('../controllers/properties');
+const { propertyByIdExists } = require('../helpers/db-validators');
 const validateFields = require('../middlewares/validate-fields');
 const validateJWT = require('../middlewares/validate-jwt');
 const { isPropertyTypeValid } = require('../middlewares/validate-property-type');
@@ -36,8 +37,17 @@ router.put( '/:id', [
     validateJWT,
     check( 'id', 'Id is mandatory' ).not().isEmpty(),
     check( 'id', 'Is not a valid MongoID').isMongoId(),
+    check( 'id' ).custom( propertyByIdExists ),
     validateFields
 ], updateProperty);
+
+router.delete( '/:id', [
+    validateJWT,
+    check( 'id', 'Id is mandatory' ).not().isEmpty(),
+    check( 'id', 'Is not a valid MongoID').isMongoId(),
+    check( 'id' ).custom( propertyByIdExists ),
+    validateFields
+], deleteProperty);
 
 
 
