@@ -1,5 +1,4 @@
 const { request } = require("express");
-const Property = require('../models/property');
 const Favorite = require('../models/favorite');
 
 const getFavoriesByUserId = async( req = request, res = response ) => {
@@ -9,7 +8,7 @@ const getFavoriesByUserId = async( req = request, res = response ) => {
     const favorite = await Favorite.findOne({ user: userId });
 
     if( !favorite ) {
-        return res.json(401).json({
+        return res.status(401).json({
             ok: false,
             msg: `No favorites found by UserID: ${ userId }`
         })
@@ -26,6 +25,7 @@ const addPropertyToFavorites = async( req = request, res = response ) => {
     const { property } = req.body;
 
     const prevFavorites = await Favorite.findOne({ user: req.user._id });
+    console.log(prevFavorites);
 
     if( !prevFavorites ) {
         
@@ -44,13 +44,12 @@ const addPropertyToFavorites = async( req = request, res = response ) => {
     }
 
     const data = {
-        properties: prevFavorites.properties.push( property ),
-        user: req.user._id
+        $push: {
+            properties: property
+        }
     }
 
-    const favorite = new Favorite( data );
-    
-    await favorite.save();
+    const favorite = await Favorite.findOneAndUpdate( { user: req.user._id }, data );
 
     res.status(201).json({
         favorite
