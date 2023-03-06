@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { getProperties, createProperty } = require('../controllers/properties');
+const { getProperties, createProperty, updateProperty } = require('../controllers/properties');
 const validateFields = require('../middlewares/validate-fields');
 const validateJWT = require('../middlewares/validate-jwt');
 const { isPropertyTypeValid } = require('../middlewares/validate-property-type');
@@ -31,6 +31,13 @@ router.post( '/', [
     check( 'email', 'Email is not valid' ).isEmail(),
     validateFields
 ], createProperty);
+
+router.put( '/:id', [
+    validateJWT,
+    check( 'id', 'Id is mandatory' ).not().isEmpty(),
+    check( 'id', 'Is not a valid MongoID').isMongoId(),
+    validateFields
+], updateProperty);
 
 
 
