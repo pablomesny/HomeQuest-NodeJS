@@ -25,7 +25,6 @@ const addPropertyToFavorites = async( req = request, res = response ) => {
     const { property } = req.body;
 
     const prevFavorites = await Favorite.findOne({ user: req.user._id });
-    console.log(prevFavorites);
 
     if( !prevFavorites ) {
         
@@ -57,8 +56,44 @@ const addPropertyToFavorites = async( req = request, res = response ) => {
 
 }
 
+const deletePropertyFromFavorites = async( req = request, res = response ) => {
+
+    const { property } = req.body;
+
+    const isPropertyInFavorites = await Favorite.findOne({ user: req.user._id, properties: { '$in': property }});
+
+    if( !isPropertyInFavorites ) {
+        return res.status(401).json({
+            ok: false,
+            msg: 'User has no favorites added or property is not in favorites'
+        })
+    }
+
+    if( isPropertyInFavorites.properties.length === 1 && isPropertyInFavorites ) {
+        await Favorite.findOneAndDelete( { user: req.user._id } );
+
+        return res.json({
+            msg: 'User favorites register deleted'
+        })
+    }
+
+    const data = {
+        $pull: {
+            properties: property
+        }
+    }
+
+    const favorite = await Favorite.findOneAndUpdate( { user: req.user._id }, data );
+
+    res.json({
+        favorite
+    })
+
+}
+
 
 module.exports = {
     getFavoriesByUserId,
-    addPropertyToFavorites
+    addPropertyToFavorites,
+    deletePropertyFromFavorites
 }

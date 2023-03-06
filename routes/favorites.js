@@ -3,7 +3,7 @@ const { check } = require('express-validator');
 const validateFields = require('../middlewares/validate-fields');
 const validateJWT = require('../middlewares/validate-jwt');
 const { userByIdExists, propertyByIdExists } = require('../helpers/db-validators');
-const { getFavoriesByUserId, addPropertyToFavorites } = require('../controllers/favorites');
+const { getFavoriesByUserId, addPropertyToFavorites, deletePropertyFromFavorites } = require('../controllers/favorites');
 
 const router = new Router();
 
@@ -21,6 +21,14 @@ router.post( '/', [
     check( 'property' ).custom( propertyByIdExists ),
     validateFields
 ], addPropertyToFavorites);
+
+router.delete( '/', [
+    validateJWT,
+    check( 'property', 'Property is mandatory' ).not().isEmpty(),
+    check( 'property', 'Property is not a valid MongoID').isMongoId(),
+    check( 'property' ).custom( propertyByIdExists ),
+    validateFields
+], deletePropertyFromFavorites);
 
 
 
