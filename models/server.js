@@ -11,7 +11,8 @@ class Server {
         this.paths = {
             auth: '/api/auth',
             users: '/api/users',
-            properties: '/api/properties'
+            properties: '/api/properties',
+            favorites: '/api/favorites'
         }
 
         this.dbConnection();
@@ -35,7 +36,8 @@ class Server {
     routes() {
         this.app.use( this.paths.auth, require('../routes/auth') );
         this.app.use( this.paths.users, require('../routes/users'));
-        this.app.use( this.paths.properties, require('../routes/properties'))
+        this.app.use( this.paths.properties, require('../routes/properties'));
+        this.app.use( this.paths.favorites, require('../routes/favorites'));
     }
 
     listen() {
