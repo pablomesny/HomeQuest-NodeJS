@@ -1,11 +1,16 @@
 const { request } = require("express");
 const Favorite = require('../models/favorite');
 
-const getFavoriesByUserId = async( req = request, res = response ) => {
+const getFavoritesByUserId = async( req = request, res = response ) => {
 
     const { userId } = req.params;
 
-    const favorite = await Favorite.findOne({ user: userId });
+    const favorite = await Favorite.findOne({ user: userId })
+                                    .populate({
+                                        path: 'properties',
+                                        select: 'state',
+                                        match: { state: true }
+                                    });
 
     if( !favorite ) {
         return res.status(401).json({
@@ -93,7 +98,7 @@ const deletePropertyFromFavorites = async( req = request, res = response ) => {
 
 
 module.exports = {
-    getFavoriesByUserId,
+    getFavoritesByUserId,
     addPropertyToFavorites,
     deletePropertyFromFavorites
 }
