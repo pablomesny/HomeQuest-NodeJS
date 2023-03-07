@@ -9,7 +9,8 @@ const FavoriteSchema = Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: [ true, 'User is mandatory' ]
+        required: [ true, 'User is mandatory' ],
+        unique: true
     }
 })
 

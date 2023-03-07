@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { dbConnection } = require('../database/config');
+const fileUpload = require('express-fileupload');
 
 class Server {
 
@@ -12,7 +13,8 @@ class Server {
             auth: '/api/auth',
             users: '/api/users',
             properties: '/api/properties',
-            favorites: '/api/favorites'
+            favorites: '/api/favorites',
+            uploads: '/api/uploads'
         }
 
         this.dbConnection();
@@ -27,10 +29,9 @@ class Server {
 
     middlewares() {
         this.app.use( cors() );
-
         this.app.use( express.json() );
-
         this.app.use( express.static('public') );
+        this.app.use( fileUpload() );
     }
 
     routes() {
@@ -38,6 +39,7 @@ class Server {
         this.app.use( this.paths.users, require('../routes/users'));
         this.app.use( this.paths.properties, require('../routes/properties'));
         this.app.use( this.paths.favorites, require('../routes/favorites'));
+        this.app.use( this.paths.uploads, require('../routes/uploads'));
     }
 
     listen() {

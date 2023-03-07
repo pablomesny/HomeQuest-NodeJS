@@ -19,6 +19,8 @@ const createUser = async( req = request, res = response ) => {
 
 }
 
+// TODO: transform if's to switch
+
 const updateUser = async( req = request, res = response ) => {
 
     const { id } = req.params;
