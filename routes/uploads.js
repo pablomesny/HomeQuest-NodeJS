@@ -1,7 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { uploadUserImage } = require('../controllers/uploads');
-const { userByIdExists } = require('../helpers/db-validators');
+const { uploadImage, deleteImage } = require('../controllers/uploads');
 const validateFields = require('../middlewares/validate-fields');
 const validateFile = require('../middlewares/validate-file');
 const validateJWT = require('../middlewares/validate-jwt');
@@ -14,8 +13,15 @@ router.put( '/:collection/:id', [
     check( 'collection', 'Collection is mandatory' ).not().isEmpty(),
     check( 'id', 'Id is mandatory' ).not().isEmpty(),
     check( 'id', 'Id is not a valid MongoID' ).isMongoId(),
-    check( 'id' ).custom( userByIdExists ),
     validateFields
-], uploadUserImage);
+], uploadImage);
+
+router.delete( '/:collection/:id', [
+    validateJWT,
+    check( 'collection', 'Collection is mandatory' ).not().isEmpty(),
+    check( 'id', 'Id is mandatory' ).not().isEmpty(),
+    check( 'id', 'Id is not a valid MongoID' ).isMongoId(),
+    validateFields
+], deleteImage);
 
 module.exports = router;

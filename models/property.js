@@ -39,7 +39,7 @@ const PropertySchema = Schema({
     },
     img: {
         type: [String],
-        required: [ true, 'Images are mandatory' ]
+        default: null
     },
     bedrooms: {
         type: Number,

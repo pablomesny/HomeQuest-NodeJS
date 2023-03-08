@@ -10,9 +10,8 @@ cloudinary.config({
     api_secret: 'BUgo0axgwSSR9h3g9DyuLXFv8Co'
   });
 
-const uploadUserImage = async( req = request, res = response ) => {
+const uploadImage = async( req = request, res = response ) => {
 
-    const { tempFilePath } = req.files;
     const { collection, id } = req.params;
 
     let model;
@@ -40,13 +39,13 @@ const uploadUserImage = async( req = request, res = response ) => {
             break;
 
         default:
-            res.status(500).json({
+            return res.status(500).json({
                 ok: false,
-                msg: 'Collection is not added into controller'
-            })
+                msg: 'Collection is not added into the controller'
+            });
     }
 
-    if( model.img ) {
+    if( model.img && collection === 'users' ) {
 
         const nameArr = model.img.split('/');
         const fileName = nameArr[ nameArr.length - 1 ];
@@ -61,9 +60,13 @@ const uploadUserImage = async( req = request, res = response ) => {
         const { tempFilePath } = await loadFile( req.files );
         const { secure_url } = await cloudinary.uploader.upload( tempFilePath );
 
-        model.img = secure_url;
+        if( collection === 'properties' ) {
+            model.img.push( secure_url );
+        } else {
+            model.img = secure_url;
+        }
         
-        if( collection === 'users'.toLowerCase() ) {
+        if( collection === 'users' ) {
             await User.findByIdAndUpdate( id, model );
 
             return res.json({
@@ -85,6 +88,74 @@ const uploadUserImage = async( req = request, res = response ) => {
         })
     }
     
+}
+
+const deleteImage = async( req = request, res = response ) => {
+
+    const { collection, id } = req.params;
+    const { photo_url } = req.body;
+
+    switch( collection ) {
+
+        case 'properties':
+            if( !photo_url ) {
+                return res.status(401).json({
+                    ok: false,
+                    msg: 'Photo URL is mandatory'
+                });
+            }
+    
+            const property = await Property.findByIdAndUpdate( id, {
+                $pull: {
+                    img: photo_url
+                }
+            })
+
+            if( !property ) {
+                return res.status(400).json({
+                    ok: false,
+                    msg: `Property does not exists with ID: ${ id }`
+                })
+            }
+
+            const propertyImageArr = photo_url.split('/');
+            const propertyFileName = propertyImageArr[ propertyImageArr.length - 1 ];
+            const [ public_property_id ] = propertyFileName.split('.');
+
+            cloudinary.uploader.destroy( public_property_id );
+    
+            return res.json({
+                property
+            })
+
+        case 'users':
+            const user = await User.findByIdAndUpdate( id, { img: null } );
+
+            if( !user ) {
+                return res.status(400).json({
+                    ok: false,
+                    msg: `User does not exists with ID: ${ id }`
+                })
+            }
+
+            const userImageArr = model.img.split('/');
+            const userFileName = userImageArr[ userImageArr.length - 1 ];
+            const [ public_user_id ] = userFileName.split('.');
+
+            cloudinary.uploader.destroy( public_user_id );
+
+            return res.json({
+                user
+            })
+
+
+        default:
+            return res.status(500).json({
+                ok: false,
+                msg: 'Collection is not added into the controller'
+            })
+
+    }
 
 }
 
@@ -92,5 +163,6 @@ const uploadUserImage = async( req = request, res = response ) => {
 
 
 module.exports = {
-    uploadUserImage
+    deleteImage,
+    uploadImage
 }
