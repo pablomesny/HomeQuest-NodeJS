@@ -22,7 +22,7 @@ const createUser = async( req = request, res = response ) => {
 const updateUser = async( req = request, res = response ) => {
 
     const { id } = req.params;
-    const { firstName, lastName, phone, password, img, ...rest } = req.body;
+    const { firstName, lastName, phone, password, ...rest } = req.body;
 
     if( password ) {
         const salt = bcrypt.genSaltSync();
@@ -39,10 +39,6 @@ const updateUser = async( req = request, res = response ) => {
 
     if( phone ) {
         rest.phone = phone;
-    }
-
-    if( img ) {
-        rest.img = img;
     }
 
     const user = await User.findByIdAndUpdate( id, rest );
