@@ -138,7 +138,14 @@ const deleteImage = async( req = request, res = response ) => {
                 })
             }
 
-            const userImageArr = model.img.split('/');
+            if ( !user.img ) {
+                return res.status(400).json({
+                    ok: false,
+                    msg: 'User does not have an image'
+                })
+            }
+
+            const userImageArr = user.img.split('/');
             const userFileName = userImageArr[ userImageArr.length - 1 ];
             const [ public_user_id ] = userFileName.split('.');
 
