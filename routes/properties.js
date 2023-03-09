@@ -22,7 +22,6 @@ router.post( '/', [
     check( 'address', 'Address is mandatory' ).not().isEmpty(),
     check( 'rooms', 'Rooms is mandatory' ).not().isEmpty(),
     check( 'size', 'Size is mandatory' ).not().isEmpty(),
-    check( 'img', 'Image is mandatory' ).not().isEmpty(),
     check( 'bedrooms', 'Bedrooms are mandatory' ).not().isEmpty(),
     check( 'constructionYear', 'Construction year is mandatory' ).not().isEmpty(),
     check( 'hasGarage', 'Has garage is mandatory' ).not().isEmpty(),
